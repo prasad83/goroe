@@ -6,12 +6,12 @@ import (
 	"testing"
 )
 
-func helloWorld() ResultOrError {
+func helloWorld() ResultOrError[string] {
 	return Result("hello world")
 }
 
-func helloPlanets(planets ...string) []ResultOrError {
-	returns := make([]ResultOrError, len(planets))
+func helloPlanets(planets ...string) []ResultOrError[string] {
+	returns := make([]ResultOrError[string], len(planets))
 	for index, planet := range planets {
 		switch strings.ToUpper(planet) {
 		case "MERCURY":
@@ -30,8 +30,9 @@ func helloPlanets(planets ...string) []ResultOrError {
 			fallthrough
 		case "PLUTO":
 			returns[index] = Result(fmt.Sprintf("Hello %s", planet))
+		default:
+			returns[index] = Errorf[string]("Not a planet")
 		}
-		returns[index] = Errorf("Not a planet")
 	}
 	return returns
 }
@@ -40,7 +41,7 @@ func TestHelloWorld(t *testing.T) {
 	if result, err := helloWorld().Unwrap(); err != nil {
 		panic(err)
 	} else {
-		println(result.(string))
+		println(result)
 	}
 }
 
@@ -50,7 +51,7 @@ func TestHelloPlanets(t *testing.T) {
 		if r, err := roe.Unwrap(); err != nil {
 			println("Error: " + err.Error())
 		} else {
-			println(r.(string))
+			println(r)
 		}
 	}
 }

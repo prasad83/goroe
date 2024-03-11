@@ -14,7 +14,7 @@ import (
     "github.com/prasad83/goroe"
 )
 
-func helloWorld() ResultOrError {
+func helloWorld() ResultOrError[string] {
     return goroe.Result("hello world")
 }
 
@@ -22,7 +22,7 @@ func main() {
     if result, err := helloWorld().Unwrap(); err != nil {
         panic(err)
     } else {
-        println(result.(string))
+        println(result)
     }
 }
 ```
@@ -34,7 +34,7 @@ import (
     "github.com/prasad83/goroe"
 )
 
-func helloPlanets(planets ...string) []ResultOrError {
+func helloPlanets(planets ...string) []ResultOrError[string] {
 	returns := make([]ResultOrError, len(planets))
 	for index, planet := range planets {
 		switch strings.ToUpper(planet) {
@@ -53,9 +53,10 @@ func helloPlanets(planets ...string) []ResultOrError {
 		case "NEPTUNE":
 			fallthrough
 		case "PLUTO":
-			returns[index] = Result(fmt.Sprintf("Hello %s", planet))
+			returns[index] = Result[string](fmt.Sprintf("Hello %s", planet))
+		default:
+			returns[index] = Errorf[string]("Not a planet")
 		}
-		returns[index] = Errorf("Not a planet")
 	}
 	return returns
 }
@@ -66,7 +67,7 @@ func main() {
 		if r, err := roe.Unwrap(); err != nil {
 			println("Error: " + err.Error())
 		} else {
-			println(r.(string))
+			println(r)
 		}
 	}
 }

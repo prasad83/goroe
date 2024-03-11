@@ -2,31 +2,27 @@ package goroe
 
 import "fmt"
 
-type ResultOrError struct {
-	result interface{}
+type ResultOrError[T any] struct {
+	result T
 	err    error
 }
 
-func (roe ResultOrError) Unwrap() (interface{}, error) {
-	if roe.err != nil {
-		return nil, roe.err
-	} else {
-		return roe.result, nil
-	}
+func (roe ResultOrError[T]) Unwrap() (T, error) {
+	return roe.result, roe.err
 }
 
-func NewResultError(res interface{}, err error) ResultOrError {
-	return ResultOrError{result: res, err: err}
+func NewResultError[T any](res T, err error) ResultOrError[T] {
+	return ResultOrError[T]{result: res, err: err}
 }
 
-func Result(res interface{}) ResultOrError {
-	return ResultOrError{result: res}
+func Result[T any](res T) ResultOrError[T] {
+	return ResultOrError[T]{result: res}
 }
 
-func Errorf(format string, args ...interface{}) ResultOrError {
-	return ResultOrError{err: fmt.Errorf(format, args...)}
+func Errorf[T any](format string, args ...interface{}) ResultOrError[T] {
+	return ResultOrError[T]{err: fmt.Errorf(format, args...)}
 }
 
-func Error(err error) ResultOrError {
-	return ResultOrError{err: err}
+func Error[T any](err error) ResultOrError[T] {
+	return ResultOrError[T]{err: err}
 }
